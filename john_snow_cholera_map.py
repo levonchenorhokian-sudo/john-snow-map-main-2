@@ -3,6 +3,7 @@
 import streamlit as st
 import pandas as pd
 import pydeck as pdk
+import altair as alt
 from PIL import Image
 
 #load the data from excel in a dateframe
@@ -133,7 +134,14 @@ st.write('')
 st.subheader('Death Count Distribution')
 distribution = df[df['count'] > 0]['count'].value_counts().sort_index()
 dist_df = pd.DataFrame({'Death Count': distribution.index, 'Number of Locations': distribution.values})
-st.bar_chart(dist_df, x='Death Count', y='Number of Locations')
+
+bar_chart = alt.Chart(dist_df).mark_bar().encode(
+    x=alt.X('Death Count:O', axis=alt.Axis(title='Death Count', grid=False)),
+    y=alt.Y('Number of Locations:Q', axis=alt.Axis(title='Number of Locations', grid=False)),
+    tooltip=['Death Count', 'Number of Locations']
+).properties(height=350)
+
+st.altair_chart(bar_chart, use_container_width=True)
 st.caption('Each bar represents how many locations recorded that number of deaths (full dataset, independent of slider)')
 
 with st.expander('📖 About John Snow & the 1854 Cholera Outbreak'):
